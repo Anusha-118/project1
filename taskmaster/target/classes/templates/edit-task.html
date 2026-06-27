@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Task - TaskMaster</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+    <!-- Include Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Page Title -->
+                <div class="mb-4">
+                    <a href="/tasks" class="btn btn-sm btn-outline-secondary mb-3">
+                        <i class="bi bi-arrow-left"></i> Back to Tasks
+                    </a>
+                    <h1 class="page-title">Edit Task</h1>
+                    <p class="text-muted">Modify the details of your task below.</p>
+                </div>
+
+                <!-- Alert if no projects exist -->
+                <div th:if="${projects == null || projects.isEmpty()}" class="alert alert-warning d-flex align-items-center gap-2 mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                    <div>
+                        You must create at least one project before you can manage tasks. 
+                        <a href="/projects/add" class="alert-link">Create a Project here</a>.
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="content-card">
+                    <form th:action="@{/tasks/edit/{id}(id=${task.id})}" th:object="${task}" method="post">
+                        
+                        <!-- Task Name -->
+                        <div class="mb-3">
+                            <label for="taskName" class="form-label">Task Name <span class="text-danger">*</span></label>
+                            <input type="text" id="taskName" th:field="*{taskName}" 
+                                   class="form-control" th:classappend="${#fields.hasErrors('taskName')} ? 'is-invalid' : ''"
+                                   placeholder="Enter task name" th:disabled="${projects == null || projects.isEmpty()}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('taskName')}" th:errors="*{taskName}">
+                                Task name is required.
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea id="description" th:field="*{description}" rows="3" 
+                                      class="form-control" placeholder="Enter task description..." th:disabled="${projects == null || projects.isEmpty()}"></textarea>
+                        </div>
+
+                        <!-- Associated Project Selection -->
+                        <div class="mb-3">
+                            <label for="project" class="form-label">Associated Project <span class="text-danger">*</span></label>
+                            <select id="project" th:field="*{project.id}" class="form-select" th:disabled="${projects == null || projects.isEmpty()}">
+                                <option value="" disabled>-- Select a Project --</option>
+                                <option th:each="p : ${projects}" th:value="${p.id}" th:text="${p.projectName}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Due Date and Priority -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="dueDate" class="form-label">Due Date <span class="text-danger">*</span></label>
+                                <input type="date" id="dueDate" th:field="*{dueDate}" 
+                                       class="form-control" th:classappend="${#fields.hasErrors('dueDate')} ? 'is-invalid' : ''"
+                                       th:disabled="${projects == null || projects.isEmpty()}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}">
+                                    Due date is required.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="priority" class="form-label">Priority</label>
+                                <select id="priority" th:field="*{priority}" class="form-select" th:disabled="${projects == null || projects.isEmpty()}">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Status Selection -->
+                        <div class="mb-4">
+                            <label for="status" class="form-label">Status</label>
+                            <select id="status" th:field="*{status}" class="form-select" th:disabled="${projects == null || projects.isEmpty()}">
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                            <a href="/tasks" class="btn btn-outline-secondary px-4 py-2">Cancel</a>
+                            <button type="submit" class="btn btn-success px-4 py-2" th:disabled="${projects == null || projects.isEmpty()}">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

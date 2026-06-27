@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - TaskMaster</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+    <!-- Include Navbar -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="container my-5">
+        <!-- Page Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-6">
+                <h1 class="page-title mb-1">Projects</h1>
+                <p class="text-muted">Manage your projects, descriptions, timelines, and statuses.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <a href="/projects/add" class="btn btn-primary px-4 py-2">
+                    <i class="bi bi-plus-lg me-1"></i> Add Project
+                </a>
+            </div>
+        </div>
+
+        <!-- Search Bar and Projects Table Card -->
+        <div class="content-card">
+            <!-- Search Form -->
+            <form th:action="@{/projects}" method="get" class="row g-3 mb-4">
+                <div class="col-md-8 col-lg-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" th:value="${search}" class="form-control border-start-0 ps-0" placeholder="Search project by name...">
+                        <button type="submit" class="btn btn-dark">Search</button>
+                        <a th:if="${search != null && search != ''}" href="/projects" class="btn btn-outline-secondary">Clear</a>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Projects Table -->
+            <div th:if="${projects != null && !projects.isEmpty()}" class="table-responsive">
+                <table class="table table-custom table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">ID</th>
+                            <th>Project Name</th>
+                            <th>Description</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th style="width: 150px;" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="project : ${projects}">
+                            <td class="fw-bold text-muted" th:text="${project.id}">1</td>
+                            <td class="fw-bold" th:text="${project.projectName}">Project Name</td>
+                            <td th:text="${project.description}">Description</td>
+                            <td th:text="${project.startDate != null ? #temporals.format(project.startDate, 'yyyy-MM-dd') : '-'}">2026-06-26</td>
+                            <td th:text="${project.endDate != null ? #temporals.format(project.endDate, 'yyyy-MM-dd') : '-'}">2026-07-26</td>
+                            <td>
+                                <span class="badge badge-custom" 
+                                      th:classappend="${project.status == 'Completed' ? 'bg-success' : (project.status == 'In Progress' ? 'bg-primary' : 'bg-secondary')}"
+                                      th:text="${project.status}">Not Started</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a th:href="@{/projects/edit/{id}(id=${project.id})}" class="btn btn-sm btn-outline-primary me-2 rounded" title="Edit">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <a th:href="@{/projects/delete/{id}(id=${project.id})}" class="btn btn-sm btn-outline-danger rounded" 
+                                       onclick="return confirm('Are you sure you want to delete this project? All associated tasks will also be deleted.')" title="Delete">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div th:if="${projects == null || projects.isEmpty()}" class="text-center py-5">
+                <div class="fs-1 text-muted mb-3"><i class="bi bi-folder-x"></i></div>
+                <h5 class="fw-bold">No projects found</h5>
+                <p class="text-muted">Create a new project to get started, or refine your search query.</p>
+                <a href="/projects/add" class="btn btn-primary mt-2">Create First Project</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
